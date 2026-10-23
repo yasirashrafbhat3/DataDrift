@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataDrift | E-commerce Data Intelligence</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-soft: #0d1b2a;
+        --panel: rgba(15, 23, 42, 0.95);
+        --panel-2: rgba(15, 23, 42, 0.78);
+        --border: rgba(148, 163, 184, 0.2);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --primary: #38bdf8;
+        --primary-strong: #0ea5e9;
+        --success: #34d399;
+        --warning: #fbbf24;
+        --danger: #f87171;
+        --purple: #a78bfa;
+        --shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #020817 0%, #0b1321 100%);
+        color: var(--text);
+      }
+
+      .app-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 30px 20px 50px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        padding: 18px 22px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: rgba(15, 23, 42, 0.82);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary), var(--purple));
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .status-pill {
+        border: 1px solid rgba(52, 211, 153, 0.35);
+        background: rgba(52, 211, 153, 0.1);
+        color: #d1fae5;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 24px;
+        margin-top: 28px;
+      }
+
+      .panel {
+        background: rgba(15, 23, 42, 0.82);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-copy {
+        padding: 30px 30px 24px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--primary);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+      }
+
+      h1 {
+        font-size: clamp(2.3rem, 5vw, 3.6rem);
+        margin: 18px 0 14px;
+        letter-spacing: -0.06em;
+        line-height: 1.05;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 720px;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      button, .btn-link {
+        appearance: none;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.18s ease, opacity 0.18s ease;
+      }
+
+      button:hover, .btn-link:hover { transform: translateY(-1px); }
+
+      .primary-btn {
+        background: linear-gradient(135deg, var(--primary), var(--purple));
+        color: white;
+        box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+      }
+
+      .ghost-btn {
+        background: rgba(148, 163, 184, 0.08);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .hero-card {
+        padding: 22px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .mini-kpi {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 14px;
+      }
+
+      .mini-box {
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid var(--border);
+      }
+
+      .mini-box small {
+        color: var(--muted);
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .mini-box strong {
+        font-size: 1.5rem;
+      }
+
+      .metrics-grid {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 20px;
+      }
+
+      .metric-card {
+        padding: 22px 20px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.82);
+      }
+
+      .metric-card .label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+
+      .metric-card .value {
+        font-size: clamp(1.6rem, 2vw, 2.5rem);
+        font-weight: 800;
+        letter-spacing: -0.05em;
+      }
+
+      .metric-card .hint {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .content-grid {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 1.1fr 1.1fr;
+        gap: 22px;
+      }
+
+      .panel-section {
+        padding: 22px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .section-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .badge {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(148, 163, 184, 0.06);
+        color: var(--muted);
+      }
+
+      .upload-box {
+        border: 1.5px dashed rgba(56, 189, 248, 0.38);
+        background: rgba(56, 189, 248, 0.06);
+        border-radius: 18px;
+        padding: 18px;
+        margin-bottom: 16px;
+      }
+
+      .hidden-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .dropzone {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 120px;
+        border-radius: 14px;
+        border: 1px dashed rgba(56, 189, 248, 0.4);
+        background: rgba(15, 23, 42, 0.4);
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .dropzone strong {
+        color: var(--text);
+      }
+
+      .list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .issue-item,
+      .suggestion-item,
+      .anomaly-item {
+        padding: 14px 15px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(15, 23, 42, 0.66);
+      }
+
+      .issue-item strong,
+      .suggestion-item strong,
+      .anomaly-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .issue-meta,
+      .meta-row {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .status-good { color: var(--success); }
+      .status-warn { color: var(--warning); }
+      .status-bad { color: var(--danger); }
+
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+      }
+
+      th, td {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        background: rgba(15, 23, 42, 0.95);
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .status-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        min-width: 90px;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .status-box.good { background: rgba(52, 211, 153, 0.12); color: var(--success); }
+      .status-box.warn { background: rgba(251, 191, 36, 0.12); color: var(--warning); }
+      .status-box.bad { background: rgba(248, 113, 113, 0.12); color: var(--danger); }
+
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+        gap: 12px;
+      }
+
+      .analytics-box {
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(15, 23, 42, 0.6);
+      }
+
+      .analytics-box small {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+      }
+
+      .analytics-box strong {
+        font-size: 1.25rem;
+      }
+
+      .muted-note {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .toast {
+        position: fixed;
+        right: 26px;
+        bottom: 26px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hidden { display: none !important; }
+
+      @media (max-width: 980px) {
+        .hero { grid-template-columns: 1fr; }
+        .metrics-grid, .content-grid { grid-template-columns: 1fr 1fr; }
+      }
+
+      @media (max-width: 700px) {
+        .metrics-grid, .content-grid, .analytics-grid { grid-template-columns: 1fr; }
+        .topbar { flex-direction: column; align-items: flex-start; }
+        .hero-copy { padding: 22px 18px; }
+        .panel-section { padding: 18px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">D</div>
+          <span>DataDrift</span>
+        </div>
+        <div class="status-pill" id="backendStatus">Checking backend...</div>
+      </header>
+
+      <section class="hero">
+        <div class="panel hero-copy">
+          <div class="eyebrow">AI-powered intelligence</div>
+          <h1>Turn messy e-commerce data into trusted decisions.</h1>
+          <p class="lead">
+            Upload your sales CSV, review detected issues, approve safe fixes, and export a clean data file ready for analysis.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-btn" id="uploadBtn">Upload CSV</button>
+            <button class="ghost-btn" id="sampleBtn">Load sample dataset</button>
+          </div>
+          <input id="csvInput" type="file" accept=".csv,text/csv" class="hidden-input" />
+        </div>
+
+        <div class="panel hero-card">
+          <div class="section-header">
+            <h3>Live overview</h3>
+            <span class="badge" id="fileLabel">No file loaded</span>
+          </div>
+
+          <div class="mini-kpi">
+            <div class="mini-box">
+              <small>Orders</small>
+              <strong id="miniOrders">0</strong>
+            </div>
+            <div class="mini-box">
+              <small>Revenue</small>
+              <strong id="miniRevenue">$0</strong>
+            </div>
+            <div class="mini-box">
+              <small>Quality</small>
+              <strong id="miniQuality">0%</strong>
+            </div>
+            <div class="mini-box">
+              <small>Anomalies</small>
+              <strong id="miniAnomalies">0</strong>
+            </div>
+          </div>
+
+          <div class="muted-note">
+            AI recommendations are optional and handled server-side. The app works without any API key.
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <div class="label">Orders</div>
+          <div class="value" id="ordersMetric">0</div>
+          <div class="hint">Total rows reviewed</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Revenue</div>
+          <div class="value" id="revenueMetric">$0</div>
+          <div class="hint">Gross value from file</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Avg Order</div>
+          <div class="value" id="avgOrderMetric">$0</div>
+          <div class="hint">Average order revenue</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Quality</div>
+          <div class="value" id="qualityMetric">0%</div>
+          <div class="hint">Data quality score</div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel panel-section">
+          <div class="section-header">
+            <h3>Data validation</h3>
+            <span class="badge" id="issueCountBadge">0 issues</span>
+          </div>
+
+          <div class="upload-box">
+            <div class="dropzone" id="dropzone">
+              <span>📁</span>
+              <span><strong>Drop a CSV here</strong> or click to browse</span>
+              <input id="csvInputSecondary" type="file" accept=".csv,.txt" class="hidden-input" />
+            </div>
+          </div>
+
+          <div id="issuesContainer" class="list">
+            <div class="muted-note">Upload a file to review detected data quality issues.</div>
+          </div>
+        </div>
+
+        <div class="panel panel-section">
+          <div class="section-header">
+            <h3>Safe cleaning proposals</h3>
+            <span class="badge" id="suggestionBadge">0 suggestions</span>
+          </div>
+          <div id="suggestionsContainer" class="list">
+            <div class="muted-note">No cleaning recommendations available yet.</div>
+          </div>
+          <div class="hero-actions" style="margin-top: 18px;">
+            <button class="primary-btn" id="approveBtn">Approve safe fixes</button>
+            <button class="ghost-btn" id="exportBtn">Export cleaned CSV</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel panel-section">
+          <div class="section-header">
+            <h3>Business analytics</h3>
+            <span class="badge" id="analyticsBadge">0 metrics</span>
+          </div>
+          <div class="analytics-grid" id="analyticsGrid">
+            <div class="muted-note">Analytics will appear after your file is validated.</div>
+          </div>
+        </div>
+
+        <div class="panel panel-section">
+          <div class="section-header">
+            <h3>Anomaly detection</h3>
+            <span class="badge" id="anomalyBadge">0 alerts</span>
+          </div>
+          <div id="anomaliesContainer" class="list">
+            <div class="muted-note">No anomalies detected yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-section" style="margin-top: 22px;">
+        <div class="section-header">
+          <h3>Data preview</h3>
+          <span class="badge" id="previewBadge">Rows 0-0</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead id="previewHead"></thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const state = {
+        analysis: null,
+        cleanedRows: [],
+        exportCsv: ""
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function showToast(message) {
+        const toast = $('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(showToast.timeoutId);
+        showToast.timeoutId = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      function currency(value) {
+        const num = Number(value || 0);
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
+      }
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat('en-US').format(Number(value || 0));
+      }
+
+      function safeText(value) {
+        return value === null || value === undefined || value === '' ? '—' : String(value);
+      }
+
+      async function checkHealth() {
+        try {
+          const response = await fetch('/health');
+          const data = await response.json();
+          const pill = $('backendStatus');
+          if (data.status === 'ok') {
+            pill.textContent = 'Backend online';
+            pill.style.color = '#d1fae5';
+          } else {
+            pill.textContent = 'Backend unavailable';
+            pill.style.color = '#fca5a5';
+          }
+        } catch (error) {
+          $('backendStatus').textContent = 'Backend offline';
+          document.getElementById('backendStatus').style.color = '#fca5a5';
+        }
+      }
+
+      function updateMetricsFromAnalysis(analysis) {
+        if (!analysis) return;
+
+        const analytics = analysis.analytics || {};
+        const totalOrders = Number(analytics.total_orders || 0);
+        const totalRevenue = Number(analytics.total_revenue || 0);
+        const avgOrder = Number(analytics.average_order_value || 0);
+        const qualityScore = Number(analysis.quality_score || 0);
+
+        $('ordersMetric').textContent = formatNumber(totalOrders);
+        $('revenueMetric').textContent = currency(totalRevenue);
+        $('avgOrderMetric').textContent = currency(avgOrder);
+        $('qualityMetric').textContent = `${qualityScore}%`;
+
+        $('miniOrders').textContent = formatNumber(totalOrders);
+        $('miniRevenue').textContent = currency(totalRevenue);
+        $('miniQuality').textContent = `${qualityScore}%`;
+        $('miniAnomalies').textContent = String((analysis.anomalies || []).length);
+
+        $('issueCountBadge').textContent = `${(analysis.issues || []).length} issues`;
+        $('suggestionBadge').textContent = `${(analysis.suggestions || []).length} suggestions`;
+        $('analyticsBadge').textContent = `${Object.keys(analytics || {}).length} metrics`;
+        $('anomalyBadge').textContent = `${(analysis.anomalies || []).length} alerts`;
+      }
+
+      function renderIssues(issues = []) {
+        const container = $('issuesContainer');
+        if (!issues.length) {
+          container.innerHTML = '<div class="muted-note">No critical issues detected in the selected file.</div>';
+          return;
+        }
+
+        container.innerHTML = issues.map((issue) => {
+          const levelClass = issue.level === 'high' ? 'bad' : issue.level === 'medium' ? 'warn' : 'good';
+          const label = issue.level === 'high' ? 'High' : issue.level === 'medium' ? 'Medium' : 'Low';
+          return `
+            <div class="issue-item">
+              <strong>${safeText(issue.message)}</strong>
+              <div class="issue-meta">
+                <span class="status-box ${levelClass}">${label}</span>
+                &nbsp; row ${issue.row_index ?? '—'} · ${safeText(issue.field || 'general')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderSuggestions(suggestions = []) {
+        const container = $('suggestionsContainer');
+        if (!suggestions.length) {
+          container.innerHTML = '<div class="muted-note">No safe cleaning suggestions are available for this dataset.</div>';
+          return;
+        }
+
+        container.innerHTML = suggestions.map((item) => {
+          const safeLabel = item.safe ? 'Safe' : 'Manual review';
+          const safeClass = item.safe ? 'good' : 'warn';
+          return `
+            <div class="suggestion-item">
+              <strong>${safeText(item.field)}</strong>
+              <div class="meta-row">${safeText(item.reason)}</div>
+              <div class="meta-row">
+                ${safeText(item.original_value)} → <strong>${safeText(item.suggested_value)}</strong>
+              </div>
+              <div class="meta-row"><span class="status-box ${safeClass}">${safeLabel}</span></div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderAnalytics(analytics = {}) {
+        const grid = $('analyticsGrid');
+        const cards = [
+          ['Total orders', analytics.total_orders || 0],
+          ['Revenue', currency(analytics.total_revenue || 0)],
+          ['Average order', currency(analytics.average_order_value || 0)],
+          ['Top category', analytics.top_category || '—'],
+          ['Top product', analytics.top_product || '—'],
+          ['Unique customers', analytics.unique_customers || 0]
+        ];
+
+        grid.innerHTML = cards.map(([label, value]) => `
+          <div class="analytics-box">
+            <small>${label}</small>
+            <strong>${safeText(value)}</strong>
+          </div>
+        `).join('');
+      }
+
+      function renderAnomalies(anomalies = []) {
+        const container = $('anomaliesContainer');
+        if (!anomalies.length) {
+          container.innerHTML = '<div class="muted-note">No anomalies detected. The data looks stable.</div>';
+          return;
+        }
+
+        container.innerHTML = anomalies.map((item) => `
+          <div class="anomaly-item">
+            <strong>${safeText(item.type)}</strong>
+            <div class="meta-row">Row ${item.row_index ?? '—'} · ${safeText(item.field)}</div>
+            <div class="meta-row">${safeText(item.message)}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderPreview(rows = []) {
+        const head = $('previewHead');
+        const body = $('previewBody');
+        const previewBadge = $('previewBadge');
+
+        if (!rows.length) {
+          head.innerHTML = '';
+          body.innerHTML = '<tr><td colspan="8" class="muted-note">No rows available yet.</td></tr>';
+          previewBadge.textContent = 'Rows 0-0';
+          return;
+        }
+
+        const columns = Object.keys(rows[0]).slice(0, 8);
+        head.innerHTML = `<tr>${columns.map((col) => `<th>${safeText(col)}</th>`).join('')}</tr>`;
+
+        const visibleRows = rows.slice(0, 8);
+        body.innerHTML = visibleRows.map((row) => `
+          <tr>${columns.map((col) => `<td>${safeText(row[col])}</td>`).join('')}</tr>
+        `).join('');
+
+        previewBadge.textContent = `Rows 1-${visibleRows.length}`;
+      }
+
+      function renderDashboard(analysis) {
+        if (!analysis) return;
+        state.analysis = analysis;
+        updateMetricsFromAnalysis(analysis);
+        renderIssues(analysis.issues || []);
+        renderSuggestions(analysis.suggestions || []);
+        renderAnalytics(analysis.analytics || {});
+        renderAnomalies(analysis.anomalies || []);
+        renderPreview(analysis.rows || []);
+        $('fileLabel').textContent = analysis.file_name || 'Dataset loaded';
+      }
+
+      async function uploadFile(file) {
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+          if (!response.ok || !data.analysis) {
+            throw new Error(data.detail || 'Upload failed');
+          }
+
+          renderDashboard(data.analysis);
+          state.cleanedRows = data.analysis.rows || [];
+          showToast('Dataset uploaded and validated successfully.');
+        } catch (error) {
+          showToast(error.message || 'Upload failed');
+          console.error(error);
+        }
+      }
+
+      async function loadSampleDataset() {
+        try {
+          const response = await fetch('/api/sample-dataset');
+          const csvText = await response.text();
+          const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+          const file = new File([blob], 'sample_ecommerce_data.csv', { type: 'text/csv' });
+          await uploadFile(file);
+          showToast('Sample dataset loaded.');
+        } catch (error) {
+          showToast('Sample dataset could not be loaded.');
+        }
+      }
+
+      async function approveSafeFixes() {
+        if (!state.analysis) {
+          showToast('Please upload a dataset first.');
+          return;
+        }
+
+        const approvedChanges = (state.analysis.suggestions || [])
+          .filter((item) => item.safe)
+          .map((item) => ({
+            row_index: item.row_index,
+            field: item.field,
+            suggested_value: item.suggested_value,
+            reason: item.reason,
+            original_value: item.original_value
+          }));
+
+        if (!approvedChanges.length) {
+          showToast('There are no safe corrections to approve.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/approve-cleaning', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file_name: state.analysis.file_name,
+              approved_changes: approvedChanges
+            })
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.detail || 'Approval failed');
+          }
+
+          state.cleanedRows = data.cleaned_rows || [];
+          state.exportCsv = data.csv || '';
+          renderPreview(state.cleanedRows);
+          $('previewBadge').textContent = `Approved rows ${state.cleanedRows.length}`;
+          showToast('Approved corrections applied to the working dataset.');
+        } catch (error) {
+          showToast(error.message || 'Could not approve cleaning.');
+        }
+      }
+
+      async function exportCleanedCsv() {
+        if (!state.cleanedRows.length) {
+          showToast('No cleaned dataset is available for export.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file_name: state.analysis?.file_name || 'cleaned_data.csv',
+              rows: state.cleanedRows
+            })
+          });
+
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.detail || 'Export failed');
+          }
+
+          const csvText = await response.text();
+          const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = (state.analysis?.file_name || 'cleaned_data').replace(/\.csv$/i, '') + '_cleaned.csv';
+          anchor.click();
+          URL.revokeObjectURL(url);
+          showToast('Cleaned CSV exported.');
+        } catch (error) {
+          showToast(error.message || 'CSV export failed.');
+        }
+      }
+
+      document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('csvInput').click();
+      });
+
+      document.getElementById('csvInput').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        uploadFile(file);
+      });
+
+      document.getElementById('csvInputSecondary').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        uploadFile(file);
+      });
+
+      document.getElementById('dropzone').addEventListener('click', () => {
+        document.getElementById('csvInputSecondary').click();
+      });
+
+      document.getElementById('sampleBtn').addEventListener('click', loadSampleDataset);
+      document.getElementById('approveBtn').addEventListener('click', approveSafeFixes);
+      document.getElementById('exportBtn').addEventListener('click', exportCleanedCsv);
+
+      checkHealth();
+    </script>
+  </body>
+</html>
